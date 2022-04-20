@@ -1,7 +1,16 @@
 package models
 
-import "github.com/beego/beego/v2/client/orm"
-import _ "github.com/go-sql-driver/mysql"
+import (
+	"github.com/beego/beego/v2/client/orm"
+	"github.com/beego/beego/v2/core/validation"
+	_ "github.com/go-sql-driver/mysql"
+	"strings"
+	"zhenyan/lib/log"
+)
+
+var (
+	logs = log.NewLogger()
+)
 
 func init() {
 	orm.RegisterDataBase("default", "mysql", "root:root@tcp(127.0.0.1:3306)/zhenyan?charset=utf8")
@@ -13,7 +22,14 @@ func init() {
 // User -
 type User struct {
 	ID   int    `orm:"column(id)"`
-	Name string `orm:"column(name)"`
+	Name string `orm:"column(name)" valid:"Required;Match(/^sam.*/)"`
+}
+
+func (u *User) Valid(v *validation.Validation) {
+	if strings.Index(u.Name, "sam") != -1 {
+		// 通过 SetError 设置 Name 的错误信息，HasErrors 将会返回 true
+		v.SetError("Name", "名称里不能含有 sam")
+	}
 }
 
 func GetUsersByName(name string) []User {
@@ -34,5 +50,6 @@ func GetUsersByName(name string) []User {
 	o := orm.NewOrm()
 	sqlLikeName := "%" + name + "%"
 	o.Raw(sql, sqlLikeName).QueryRows(&users)
+	logs.Debug("model:" + sqlLikeName)
 	return users
 }

@@ -9,7 +9,7 @@ func NewLogger() *logs.BeeLogger {
 	log.SetLogger(logs.AdapterConsole)
 	log.SetLogger(logs.AdapterFile, `{"filename":"project.log","level":7,"maxlines":0,"maxsize":0,"daily":true,"maxdays":10,"color":true}`)
 	log.EnableFuncCallDepth(true)
-	log.SetLogFuncCallDepth(3)
+	log.SetLogFuncCallDepth(2)
 	//log.Debug("this is a debug message")
 	return log
 }
